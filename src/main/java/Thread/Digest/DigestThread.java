@@ -1,15 +1,13 @@
-package Thread;
+package Thread.Digest;
+import java.io.*;
+import java.security.*;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+//  option + command + r 을 이용해 인자값 전달 가능
+public class DigestThread extends Thread {
 
-public class DigestRunnable implements Runnable {
     private String filename;
 
-    public DigestRunnable(String filename) {
+    public DigestThread(String filename) {
         this.filename = filename;
     }
 
@@ -23,10 +21,14 @@ public class DigestRunnable implements Runnable {
             din.close();
             byte[] digest = sha.digest(); // hash 값 완성 후 byye array 로 return
 
-            StringBuilder result = new StringBuilder(filename);
-            result.append(" : ");
-            result.append(toHexString(digest));
-            System.out.println(result); // result 출력
+//            StringBuilder result = new StringBuilder(filename);
+//            result.append(" : ");
+//            result.append(toHexString(digest));
+//            System.out.println(result); // result 출력
+            System.out.print(filename + " : ");
+            System.out.print(toHexString(digest));
+            System.out.println();
+
         } catch (IOException ex) {
             System.out.println(ex);
         } catch (NoSuchAlgorithmException ex) {
@@ -49,8 +51,7 @@ public class DigestRunnable implements Runnable {
 
     public static void main(String[] args) {
         for (String filename : args) { // filename 들을 받아들임
-            DigestRunnable dr = new DigestRunnable(filename);
-            Thread t = new Thread(dr);
+            Thread t = new DigestThread(filename); // 각 file 에 대해 Digest Thread 를 생성
             t.start();
         }
     }

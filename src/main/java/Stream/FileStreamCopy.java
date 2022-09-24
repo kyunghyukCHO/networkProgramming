@@ -6,10 +6,10 @@ import java.io.FileOutputStream;
 
 public class FileStreamCopy {
     public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println("사용법: java FileView 파일이름1 파일이름2"); // source , destination
-            System.exit(0);
-        }
+//        if (args.length != 2) {
+//            System.out.println("사용법: java FileView 파일이름1 파일이름2"); // source , destination
+//            System.exit(0);
+//        }
 
         // 초기화
         FileInputStream fis = null;
@@ -17,8 +17,8 @@ public class FileStreamCopy {
 
         try {
             // 입력인자 입력
-            fis = new FileInputStream(args[0]);
-            fos = new FileOutputStream(args[1]);
+            fis = new FileInputStream("src/main/java/Stream/Copy.txt");
+            fos = new FileOutputStream("src/main/java/Stream/Paste.txt");
             int readCount = 0;
             byte[] buffer = new byte[512];
 
