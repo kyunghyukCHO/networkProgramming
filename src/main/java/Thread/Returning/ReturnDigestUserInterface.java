@@ -50,7 +50,8 @@ public class ReturnDigestUserInterface {
                     result.append(toHexString(digest));
                     System.out.println(result);
                     break;
-                } else {
+                }
+                else {
                     System.out.println();
                 }
             }
