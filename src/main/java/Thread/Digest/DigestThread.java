@@ -25,9 +25,11 @@ public class DigestThread extends Thread {
 //            result.append(" : ");
 //            result.append(toHexString(digest));
 //            System.out.println(result); // result 출력
-            System.out.print(filename + " : ");
-            System.out.print(toHexString(digest));
-            System.out.println();
+            synchronized (System.out) {
+                System.out.print(filename + " : ");
+                System.out.print(toHexString(digest));
+                System.out.println();
+            }
 
         } catch (IOException ex) {
             System.out.println(ex);
