@@ -52,10 +52,35 @@ public class ReturnDigestUserInterface {
                     break;
                 }
                 else {
-                    System.out.println();
+                    System.out.print("");
                 }
             }
         }
+
+
+        // Join 을 이용한 방법 !!!
+//        OfflineExercise.ReturnDigest[] digests = new OfflineExercise.ReturnDigest[args.length];
+//        for (int i = 0; i < args.length; i++) {
+//            digests[i] = new OfflineExercise.ReturnDigest(args[i]);
+//            digests[i].start();
+//        }
+//
+//        for (int i = 0; i < args.length; i++) {
+//            StringBuffer result = new StringBuffer(args[i]);
+//            result.append(" : ");
+//            try {
+//                digests[i].join();
+//                byte[] digest = digests[i].getDigest();
+//                result.append(toHexString(digest));
+//                System.out.println(result);
+//
+//         //만약 thread 가 끝난 후 join 메소드를 호출한다면 blocking 없이 넘어갑니다.
+//         //blocking 을 시도하기 전 thread 의 상태를 확인합니다.
+//
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
 //        for (String filename : args) {
 //            ReturnDigest dr = new ReturnDigest(filename);
