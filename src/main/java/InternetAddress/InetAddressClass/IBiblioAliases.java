@@ -6,12 +6,12 @@ import java.net.UnknownHostException;
 public class IBiblioAliases {
     public static void main(String[] args) {
         try {
-            InetAddress ibiblio = InetAddress.getByName("www.ibiblio.org");
-            InetAddress helios = InetAddress.getByName("helios.ibiblio.org");
-            if (ibiblio.equals(helios)) {
-                System.out.println("www.ibiblio.org is the same as helios.ibiblio.org");
+            InetAddress ia1 = InetAddress.getByName("www.konkuk.ac.kr");
+            InetAddress ia2 = InetAddress.getByName("winter.konkuk.ac.kr");
+            if (ia1.equals(ia2)) {
+                System.out.println(ia1.getHostName() + " is the same as " + ia2.getHostName());
             } else {
-                System.out.println("www.ibiblio.org is not the same as helios.ibiblio.org");
+                System.out.println(ia1.getHostName() + " is not the same as "+ ia2.getHostName());
             }
         } catch(UnknownHostException ex) {
             System.out.println("Host lookup failed");

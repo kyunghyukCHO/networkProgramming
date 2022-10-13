@@ -1,14 +1,11 @@
 package InternetAddress.NetworkInterfaceClass;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 
 public class HardwareAddressTest {
     public static void main(String[] args) throws UnknownHostException, SocketException {
 //        InetAddress address = InetAddress.getLocalHost();
-        InetAddress address = InetAddress.getByName("10.0.1.2");
+        InetAddress address = InetAddress.getByName("192.168.219.105");
         System.out.println("IP address : " + address.getHostAddress());
         NetworkInterface ni = NetworkInterface.getByInetAddress(address);
         System.out.println("MAC address : " + getMACIdentifier(ni));
