@@ -27,6 +27,7 @@ public class DigestRunnable implements Runnable {
             result.append(" : ");
             result.append(toHexString(digest));
             System.out.println(result); // result 출력
+
         } catch (IOException ex) {
             System.out.println(ex);
         } catch (NoSuchAlgorithmException ex) {

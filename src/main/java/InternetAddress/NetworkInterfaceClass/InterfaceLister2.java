@@ -20,6 +20,8 @@ public class InterfaceLister2 {
             System.out.println(element);
         }
 
+        // NetworkInterfaceCard
+
         System.out.println("\ngetByInetAddress");
         InetAddress ia = InetAddress.getByName("127.0.0.1"); // loopback address
         NetworkInterface ni2 = NetworkInterface.getByInetAddress(ia);

@@ -19,12 +19,13 @@ public class DigestThread extends Thread {
             DigestInputStream din = new DigestInputStream(in, sha);
             while (din.read() != -1) ; // DigestInputStream 으로 부터 data read() ( 1byte read -> hash update )
             din.close();
-            byte[] digest = sha.digest(); // hash 값 완성 후 byye array 로 return
+            byte[] digest = sha.digest(); // hash 값 완성 후 byte array 로 return
 
 //            StringBuilder result = new StringBuilder(filename);
 //            result.append(" : ");
 //            result.append(toHexString(digest));
 //            System.out.println(result); // result 출력
+
             synchronized (System.out) {
                 System.out.print(filename + " : ");
                 System.out.print(toHexString(digest));
