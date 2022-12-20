@@ -1,6 +1,9 @@
 package Project;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Callable;
@@ -16,7 +19,7 @@ public class ProductSystemServer {
 	private static final Logger logger = Logger.getLogger("MyHTTPServer");
 	private final int port;
 	private final ProductService service;
-	
+
 
 
 	private Gson gson;
@@ -34,11 +37,8 @@ public class ProductSystemServer {
 			while (true) {
 				try {
 					//TODO : 요청이 올때마다 Thread 생성하고 Handling 하시오
-					InputStream in = System.in;
-					OutputStream out = System.out;
-					int input = in.read(); // 1 byte read. 예를들어 abc 중 a 를 read
-					System.out.println(input);
-					out.write(input);
+					Socket connection = server.accept();
+					pool.submit(new HTTPHandler(connection));
 				} catch (IOException ex) {
 					logger.log(Level.WARNING, "Exception accepting connection", ex);
 				} catch (RuntimeException ex) {
@@ -54,26 +54,28 @@ public class ProductSystemServer {
 		private final Socket connection;
 		private PrintWriter out;
 		private BufferedReader in;
-		
+
 		HTTPHandler(Socket connection) {
 			this.connection = connection;
 		}
 
 		public Void call() throws IOException {
 			try {
-				
+
 				//TODO: PrintWrite 객체 this.out, BufferedReader 객체 this.in을 생성하는 코드를 작성하시오. BufferedReader의 인코딩은 UTF-8으로 설정
-				
-				StringBuilder s=new StringBuilder();
+				out = new PrintWriter(connection.getOutputStream());
+				in = new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
+
+				StringBuilder stringBuilder=new StringBuilder();
 				String tmp;
 				String request;
-				
+
 				while ((tmp = in.readLine()) != null) {
-					s.append(tmp+"\r\n");
+					stringBuilder.append(tmp+"\r\n");
 				}
-				
-				request = s.toString();
-				
+
+				request = stringBuilder.toString();
+				System.out.println("Server에 들어온 "+request);
 				//HTTP 메서드에 따라 분기처리를 하는 파트
 				if (request.indexOf("HTTP/") != -1) {
 					if(request.indexOf("POST /login")!=-1) {
@@ -84,6 +86,16 @@ public class ProductSystemServer {
 						service.getProducts(out,requestParam);
 					}
 					//TODO : POST, PATCH(또는 PUT), DELETE API에 대한 분기처리를 작성하시오
+					else if(request.indexOf("POST /")!=-1){
+						String requestBody = request.split("\r\n\r\n")[1];
+						service.addProduct(out,requestBody);
+					}else if(request.indexOf("PATCH /")!=-1){
+						String requestBody = request.split("\r\n\r\n")[1];
+						service.updateProduct(out,requestBody);
+					}else if(request.indexOf("DELETE /")!=-1){
+						String requestParam = request.toString().split(" ")[1].replace("/", "");
+						service.deleteProduct(out,requestParam);
+					}
 					else {
 						service.setDefaultResponse(out);
 					}

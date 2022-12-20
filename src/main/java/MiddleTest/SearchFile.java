@@ -43,6 +43,7 @@ class SearchFile implements Callable<double[]> {
     public double[] call() throws Exception {
         for (int i = start_c; i <= end_c; i++) {
             for (int j = start_d; j <= end_d; j++) {
+                System.out.println("i = " + i + " j = " + j);
                 Fileviewer(i,j);
             }
         }

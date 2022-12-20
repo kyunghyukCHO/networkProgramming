@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-
 import com.google.gson.Gson;
 
 public class MyClientController {
@@ -18,9 +17,9 @@ public class MyClientController {
 	private PrintWriter pw;
 	private HTTPRequestController rc;
 
-	private String serverURL="203.252.148.148";
+//	private String serverURL="172.20.10.4";
 	private int port = 80;
-	//private String serverURL = "localhost";
+	private String serverURL = "localhost";
 
 	public MyClientController(ProductSystemUI v) {
 		this.v = v;
@@ -37,7 +36,6 @@ public class MyClientController {
 
 			// request header 세팅
 			rc.setLoginRequest(pw, gson.toJson(new User(v.idInput.getText())));
-
 			socket.shutdownOutput();
 
 			v.model.setRowCount(0);
@@ -93,12 +91,38 @@ public class MyClientController {
 			socket.shutdownOutput();
 
 			// TODO : Response 내용을 받아오는 코드를 작성하시오
+			String line = null;
+			StringBuilder stringBuilder = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				stringBuilder.append(line + "\r\n");
+			}
+			String response = stringBuilder.toString();
 
-			
-			
 			// TODO : 올바른 Response 일 때 상품 조회 이벤트를 처리하시오
 			// 참고 : ResponseBody 받아오는 방법 -> Response에서 "\r\n\r\n"를 구분자로 split하여 받아옴
-			
+			if(response.indexOf("HTTP/")!=-1){
+				if(response.indexOf("200 OK")!=-1){
+
+					String[] responseBody = response.split("\r\n\r\n")[1].split("\n");
+
+					for (int i = 0; i < responseBody.length; i++) {
+						System.out.println(responseBody[i]);
+					}
+
+					for(int i=0;i<responseBody.length;i++){
+						String[] tmp = responseBody[i].split(",");
+						String orderId = tmp[0].split(":")[1];
+						String productName = tmp[1].split(":")[1];
+						productName = productName.substring(1,productName.length()-1);
+						String orderStatus = tmp[2].split(":")[1];
+						orderStatus = orderStatus.substring(1,orderStatus.length()-1);
+						String createdAt = tmp[3].split("\"")[3];
+						Product Product = new Product(Long.parseLong(orderId),productName,orderStatus,createdAt);
+						v.model.addRow(new Object[] { orderId,productName,orderStatus,createdAt});
+					}
+
+				}
+			}
 
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -131,13 +155,21 @@ public class MyClientController {
 			rc.setPostRequest(pw, gson.toJson(new Product(v.idInput.getText(), v.nameInput.getText())));
 			socket.shutdownOutput();
 
-			
 			// TODO : Response 내용을 받아오는 코드를 작성하시오
-	
+			v.model.setRowCount(0);
+			String line = null;
+			StringBuilder stringBuilder = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				stringBuilder.append(line + "\r\n");
+			}
+			String response = stringBuilder.toString();
 
-			
 			// TODO : 올바른 Response일 때 상품을 새로고침 하시오
-	
+			if (response.indexOf("HTTP/") != -1) {
+				if (response.indexOf("201 Created") != -1) {
+					getProducts();
+				}
+			}
 
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -162,24 +194,30 @@ public class MyClientController {
 		Socket socket = null;
 		try {
 			socket = new Socket(serverURL, port);
-
 			br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 			pw = new PrintWriter(socket.getOutputStream());
 
 			//request header 설정 (PUT이 안될 경우 PATCH 사용)
 			rc.setPatchRequest(pw, gson.toJson(
 					new Product(Long.parseLong(v.txt1.getText().toString()), v.txt2.getText(), v.txt3.getText())));
-			// rc.setPutRequest(pw, gson.toJson(
-			// new Product(Long.parseLong(v.txt1.getText().toString()), v.txt2.getText(),v.txt3.getText())));
-			
 			socket.shutdownOutput();
 
 			// TODO : Response 내용을 받아오는 코드를 작성하시오
+			v.model.setRowCount(0);
+			String line = null;
+			StringBuilder stringBuilder = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				stringBuilder.append(line + "\r\n");
+			}
+			String response = stringBuilder.toString();
 
-			
-			// TODO : 올바른 Response일 때 상품을 새로고침 하는 코드를 작성하시오 
-	
+			// TODO : 올바른 Response일 때 상품을 새로고침 하는 코드를 작성하시오
 
+			if(response.indexOf("HTTP/")!=-1) {
+				if (response.indexOf("200 OK") != -1) {
+					getProducts();
+				}
+			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} finally {
@@ -212,9 +250,20 @@ public class MyClientController {
 			socket.shutdownOutput();
 
 			// TODO : Response 내용을 받아오는 코드를 작성하시오
-	
-			// TODO : 올바른 Response일 때 상품을 새로고침 하는 코드를 작성하시오
+			v.model.setRowCount(0);
+			String line = null;
+			StringBuilder stringBuilder = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				stringBuilder.append(line + "\r\n");
+			}
+			String response = stringBuilder.toString();
 
+			// TODO : 올바른 Response일 때 상품을 새로고침 하는 코드를 작성하시오
+			if (response.indexOf("HTTP/") != -1) {
+				if (response.indexOf("200 OK") != -1) {
+					getProducts();
+				}
+			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} finally {
@@ -252,11 +301,18 @@ public class MyClientController {
 					// 상품 업데이트
 					updateProduct();
 					//TODO : STEP1 이벤트 추가하기
+					v.txt1.setText("");
+					v.txt2.setText("");
+					v.txt3.setText("");
+					v.txt4.setText("");
 				} else if (obj == v.deleteButton) {
 					// 상품 삭제
 					deleteProduct();
-					
 					//TODO : STEP1 이벤트 추가하기
+					v.txt1.setText("");
+					v.txt2.setText("");
+					v.txt3.setText("");
+					v.txt4.setText("");
 				}
 			}
 		});

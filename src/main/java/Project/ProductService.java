@@ -14,14 +14,14 @@ import com.google.gson.Gson;
 
 public class ProductService {
 	//TODO : DB 정보 본인 DB 정보로 바꿔서 사용
-	private String dbURL = "DB_URL";//ex) "jdbc:mysql://localhost:3306/Schema?serverTimezone=Asia/Seoul";
-	private String dbUser = "DB_ID";
-	private String dbPasswd = "DB_PW";
+	private String dbURL = "jdbc:mysql://localhost:3306/networkProgramming?serverTimezone=Asia/Seoul";
+	private String dbId = "root";
+	private String dbPassword = "whrudgur";
 	private Connection conn;
 
 	//TODO : 비밀번호 정보 본인 학번 넣기
-	private final String [] pw={"123456789"};
-	
+	private final String [] pw={"201914184"};
+
 	private Gson gson = new Gson();
 	private HTTPResponseController hc;
 
@@ -33,14 +33,14 @@ public class ProductService {
 		//TODO : 본인 DB driver에 맞게 연결 메서드 작성 아래는 mysql에 해당하는 예시
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			this.conn = DriverManager.getConnection(dbURL, dbUser, dbPasswd);
+			this.conn = DriverManager.getConnection(dbURL, dbId, dbPassword);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void login(PrintWriter out,String requestBody){
 		User u = gson.fromJson(requestBody, User.class);
 		for (int i = 0; i < pw.length; i++){
@@ -66,9 +66,10 @@ public class ProductService {
 				content += gson.toJson(new Product(rs.getLong("order_id"), rs.getString("name"), rs.getString("status"),
 						rs.getString("created_at"))) + "\n";
 			}
-			
 			//TODO : 상품 조회 Response를 보내는 코드를 작성하시오
-	
+			System.out.println(content);
+			hc.setSuccessGetResponse(out,content);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			hc.setFailedResponse(out);
@@ -91,9 +92,9 @@ public class ProductService {
 			ps.setString(2, p.getName());
 			ps.setString(3, p.getStatus());
 			ps.executeUpdate();
-			
-			//TODO : 상품 추가 성공 Response를 보내는 코드를 작성하시오
 
+			//TODO : 상품 추가 성공 Response를 보내는 코드를 작성하시오
+			hc.setSuccessPostResponse(out);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			hc.setFailedResponse(out);
@@ -117,9 +118,9 @@ public class ProductService {
 			ps.setString(2, p.getStatus());
 			ps.setLong(3, p.getOrderId());
 			ps.executeUpdate();
-			
-			//TODO : 상품 update 성공 Response를 보내는 코드를 작성하시오(PUT 또는 PATCH)
 
+			//TODO : 상품 update 성공 Response를 보내는 코드를 작성하시오(PUT 또는 PATCH)
+			hc.setSuccessPatchResponse(out);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			hc.setFailedResponse(out);
@@ -139,9 +140,9 @@ public class ProductService {
 			ps = conn.prepareStatement("delete from products where order_id=?");
 			ps.setString(1, requestParam);
 			ps.executeUpdate();
-			
-			//TODO : 상품 삭제 성공 Response를 보내는 코드를 작성하시오 
 
+			//TODO : 상품 삭제 성공 Response를 보내는 코드를 작성하시오
+			hc.setSuccessDeleteResponse(out);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			hc.setFailedResponse(out);
@@ -156,7 +157,7 @@ public class ProductService {
 
 	public void setDefaultResponse(PrintWriter out) {
 		//TODO : 실패  Response를 보내는 코드를 작성하시오
-
+		hc.setFailedResponse(out);
 	}
 
 }
